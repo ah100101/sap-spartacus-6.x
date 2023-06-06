@@ -1,10 +1,7 @@
-const { readdirSync, copyFileSync, writeFileSync, mkdirSync } = require("fs");
+const { lstatSync, readdirSync, copyFileSync, writeFileSync, mkdirSync } = require("fs");
 const { dirname } = require("path");
 
-/**
- * @param {string} file
- * @param {string} data
- */
+
 function write(file, data) {
   try {
     mkdirSync(dirname(file), { recursive: true });
@@ -13,16 +10,26 @@ function write(file, data) {
   writeFileSync(file, data);
 }
 
+function copyFiles(source, target) {
+  const files = readdirSync(source);
+  for (const file of files) {
+    const curSource = `${source}/${file}`;
+    if (lstatSync(curSource).isDirectory()) {
+      mkdirSync(`${target}/${file}`, { recursive: true });
+      copyFiles(curSource, `${target}/${file}`);
+    } else {
+      copyFileSync(curSource, `${target}/${file}`);
+    }
+  }
+}
+
 const out_dir = ".vercel/output";
-const project_dist = "dist/sap-store-6x";
+const project_dist = "dist/sap-store-6.x";
 
 // Create a static folder in the Vercel output folder for browser assets
 mkdirSync(`${out_dir}/static`, { recursive: true });
 // Copy all browser assets to the static Vercel folder
-const static_files = readdirSync(`${project_dist}/browser`);
-for (const file of static_files) {
-  copyFileSync(`${project_dist}/browser/${file}`, `${out_dir}/static/${file}`);
-}
+copyFiles(`${project_dist}/browser`, `${out_dir}/static`);
 
 // Create a serverless function that will run the server runtime
 const fn_dir = `${out_dir}/functions/ssr.func`;
@@ -35,20 +42,16 @@ write(
     launcherType: "Nodejs",
   })
 );
+
 // Copy the main Spartacus bundle file to the serverless function directory
-copyFileSync(`${project_dist}/server/main.js`, `${fn_dir}/main.js`);
+copyFiles(`${project_dist}/server`, fn_dir);
 // Create an index.js file that will run the serverless application
 write(`${fn_dir}/index.js`, `module.exports = require("./main.js").app();`);
 
 // Since the serverless application relies on static files, create a function directory for them
 mkdirSync(`${fn_dir}/${project_dist}/browser`, { recursive: true });
 // Copy all the browser assets to the serverless function directory
-for (const file of static_files) {
-  copyFileSync(
-    `${project_dist}/browser/${file}`,
-    `${fn_dir}/${project_dist}/browser/${file}`
-  );
-}
+copyFiles(`${project_dist}/browser`, `${fn_dir}/${project_dist}/browser`);
 
 // Write a config file for Vercel build output
 write(
