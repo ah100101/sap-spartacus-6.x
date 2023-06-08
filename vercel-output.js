@@ -70,7 +70,7 @@ write(
 write(
   `${out_dir}/config.json`,
   JSON.stringify({
-    version: 4,
+    version: 5,
     // As an example, we are specifying that all paths should be handled by the ISR function
     routes: [{ src: "/.*", dest: "/isr?__pathname=/$path" }],
   })
