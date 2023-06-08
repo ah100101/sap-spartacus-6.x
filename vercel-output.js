@@ -72,6 +72,6 @@ write(
   JSON.stringify({
     version: 4,
     // As an example, we are specifying that all paths should be handled by the ISR function
-    routes: [{ src: "/(?<path>.+)$", dest: "/isr?__pathname=/$path" }],
+    routes: [{ src: "/.*", dest: "/isr?__pathname=/$path" }],
   })
 );
