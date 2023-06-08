@@ -31,8 +31,8 @@ mkdirSync(`${out_dir}/static`, { recursive: true });
 // Copy all browser assets to the static Vercel folder
 copyFiles(`${project_dist}/browser`, `${out_dir}/static`);
 
-// Create a serverless function that will run the server runtime
-const fn_dir = `${out_dir}/functions/ssr.func`;
+// Create a serverless function responsible for ISR
+const fn_dir = `${out_dir}/functions/isr.func`;
 // Write the config file for the server runtime
 write(
   `${fn_dir}/.vc-config.json`,
@@ -53,12 +53,25 @@ mkdirSync(`${fn_dir}/${project_dist}/browser`, { recursive: true });
 // Copy all the browser assets to the serverless function directory
 copyFiles(`${project_dist}/browser`, `${fn_dir}/${project_dist}/browser`);
 
+// Create a prerender configuration file that specifies the ISR configuration
+write(
+  `${out_dir}/functions/isr.prerender-config.json`,
+  JSON.stringify({
+    // Re-validation interval in seconds
+    expiration: 60,
+    // Group number of the asset. Assets with the same group will be re-validated together
+    group: 1,
+    // Array of query string parameter names that will be cached independently
+    allowQuery: ["__pathname"],
+  })
+);
+
 // Write a config file for Vercel build output
 write(
   `${out_dir}/config.json`,
   JSON.stringify({
-    version: 3,
-    // For now, we only have an SSR function to run
-    routes: [{ src: "/.*", dest: "/ssr" }],
+    version: 4,
+    // As an example, we are specifying that all paths should be handled by the ISR function
+    routes: [{ src: "/(?<path>.+)$", dest: "/isr?__pathname=/$path" }],
   })
 );
