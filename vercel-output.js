@@ -24,7 +24,7 @@ function copyFiles(source, target) {
 }
 
 function createSSRFunction() {
-  const fn_dir = `${out_dir}/functions/${name}.func`;
+  const fn_dir = `${out_dir}/functions/ssr.func`;
   write(
     `${fn_dir}/.vc-config.json`,
     JSON.stringify({
