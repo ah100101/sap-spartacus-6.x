@@ -23,6 +23,26 @@ function copyFiles(source, target) {
   }
 }
 
+function createSSRFunction() {
+  const fn_dir = `${out_dir}/functions/${name}.func`;
+  write(
+    `${fn_dir}/.vc-config.json`,
+    JSON.stringify({
+      runtime: "nodejs18.x",
+      handler: "index.js",
+      launcherType: "Nodejs",
+    })
+  );
+
+  copyFiles(`${project_dist}/server`, fn_dir);
+
+  write(`${fn_dir}/index.js`, `module.exports = require("./main.js").app();`);
+
+  // static files also need to be copied to the function dir because the server runtime uses them
+  mkdirSync(`${fn_dir}/${project_dist}/browser`, { recursive: true });
+  copyFiles(`${project_dist}/browser`, `${fn_dir}/${project_dist}/browser`);
+}
+
 const out_dir = ".vercel/output";
 const project_dist = "dist/sap-store-6.x";
 
@@ -31,47 +51,49 @@ mkdirSync(`${out_dir}/static`, { recursive: true });
 // Copy all browser assets to the static Vercel folder
 copyFiles(`${project_dist}/browser`, `${out_dir}/static`);
 
-// Create a serverless function responsible for ISR
-const fn_dir = `${out_dir}/functions/isr.func`;
-// Write the config file for the server runtime
-write(
-  `${fn_dir}/.vc-config.json`,
-  JSON.stringify({
-    runtime: "nodejs18.x",
-    handler: "index.js",
-    launcherType: "Nodejs",
-  })
-);
+createSSRFunction();
 
-// Copy the main Spartacus bundle file to the serverless function directory
-copyFiles(`${project_dist}/server`, fn_dir);
-// Create an index.js file that will run the serverless application
-write(`${fn_dir}/index.js`, `module.exports = require("./main.js").app();`);
+// // Create a serverless function responsible for ISR
+// const fn_dir = `${out_dir}/functions/isr.func`;
+// // Write the config file for the server runtime
+// write(
+//   `${fn_dir}/.vc-config.json`,
+//   JSON.stringify({
+//     runtime: "nodejs18.x",
+//     handler: "index.js",
+//     launcherType: "Nodejs",
+//   })
+// );
 
-// Since the serverless application relies on static files, create a function directory for them
-mkdirSync(`${fn_dir}/${project_dist}/browser`, { recursive: true });
-// Copy all the browser assets to the serverless function directory
-copyFiles(`${project_dist}/browser`, `${fn_dir}/${project_dist}/browser`);
+// // Copy the main Spartacus bundle file to the serverless function directory
+// copyFiles(`${project_dist}/server`, fn_dir);
+// // Create an index.js file that will run the serverless application
+// write(`${fn_dir}/index.js`, `module.exports = require("./main.js").app();`);
 
-// Create a prerender configuration file that specifies the ISR configuration
-write(
-  `${out_dir}/functions/isr.prerender-config.json`,
-  JSON.stringify({
-    // Re-validation interval in seconds
-    expiration: 60,
-    // Group number of the asset. Assets with the same group will be re-validated together
-    group: 1,
-    // Array of query string parameter names that will be cached independently
-    allowQuery: ["__pathname"],
-  })
-);
+// // Since the serverless application relies on static files, create a function directory for them
+// mkdirSync(`${fn_dir}/${project_dist}/browser`, { recursive: true });
+// // Copy all the browser assets to the serverless function directory
+// copyFiles(`${project_dist}/browser`, `${fn_dir}/${project_dist}/browser`);
+
+// // Create a prerender configuration file that specifies the ISR configuration
+// write(
+//   `${out_dir}/functions/isr.prerender-config.json`,
+//   JSON.stringify({
+//     // Re-validation interval in seconds
+//     expiration: 60,
+//     // Group number of the asset. Assets with the same group will be re-validated together
+//     group: 1,
+//     // Array of query string parameter names that will be cached independently
+//     allowQuery: ["__pathname"],
+//   })
+// );
 
 // Write a config file for Vercel build output
 write(
   `${out_dir}/config.json`,
   JSON.stringify({
-    version: 5,
+    version: 6,
     // As an example, we are specifying that all paths should be handled by the ISR function
-    routes: [{ src: "/.*", dest: "/isr?__pathname=/$path" }],
+    routes: [{ src: "/.*", dest: "/ssr" }],
   })
 );
