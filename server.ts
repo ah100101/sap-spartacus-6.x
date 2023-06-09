@@ -59,6 +59,7 @@ export function app() {
         req.url = pathname;
       }
     }
+  });
 
   // All regular routes use the Universal engine
   server.get('*', (req, res) => {
