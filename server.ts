@@ -46,6 +46,20 @@ export function app() {
     })
   );
 
+  server.get('*', (req, res) => {
+    // ISR: extract original path and adjust url accordingly
+    if (req.url) {
+      const [path, search] = req.url.split('?');
+
+      const params = new URLSearchParams(search);
+      const pathname = params.get('__pathname');
+
+      if (pathname) {
+        params.delete('__pathname');
+        req.url = pathname;
+      }
+    }
+
   // All regular routes use the Universal engine
   server.get('*', (req, res) => {
     res.render(indexHtml, {

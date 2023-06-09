@@ -45,7 +45,7 @@ function createSSRFunction() {
   copyFiles(`${project_dist}/browser`, `${fn_dir}/${project_dist}/browser`);
 }
 
-function createISRFunction(name, group) {
+function createISRFunction(name, group, fallback) {
   const fn_dir = `${out_dir}/functions/isr-${name}.func`;
   write(
     `${fn_dir}/.vc-config.json`,
@@ -73,6 +73,7 @@ function createISRFunction(name, group) {
       group,
       allowQuery: ["__pathname"],
       passQuery: true,
+      fallback,
     })
   );
 }
@@ -89,12 +90,12 @@ createISRFunction("product-detail-example", 1);
 write(
   `${out_dir}/config.json`,
   JSON.stringify({
-    version: 6,
+    version: 7,
     routes: [
       // Specify that ISR should be used for a product detail page
       {
-        src: "/electronics-spa/en/USD/product/358639/DSC-N1$",
-        dest: "/isr?__pathname=/electronics-spa/en/USD/product/358639/DSC-N1"
+        src: "/electronics-spa/en/USD/$",
+        dest: "/isr-fallback-home?__pathname=/electronics-spa/en/USD/",
       },
       // Specify that SSR should be used for all other pages
       { 
