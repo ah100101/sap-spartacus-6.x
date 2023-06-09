@@ -21,7 +21,7 @@ const ngExpressEngine = NgExpressEngineDecorator.get(engine, {
 // The Express app is exported so that it can be used by serverless Functions.
 export function app() {
   const server = express();
-  const distFolder = join(process.cwd(), 'dist/vercel-sap-store/browser');
+  const distFolder = join(process.cwd(), 'dist/sap-store-6.x/browser');
   const indexHtml = existsSync(join(distFolder, 'index.original.html'))
     ? 'index.original.html'
     : 'index';
@@ -48,7 +48,6 @@ export function app() {
 
   // All regular routes use the Universal engine
   server.get('*', (req, res) => {
-    // ISR: extract original path and adjust url accordingly
     if (req.url) {
       const [path, search] = req.url.split('?');
 
@@ -60,7 +59,6 @@ export function app() {
         req.url = pathname;
       }
     }
-
     res.render(indexHtml, {
       req,
       providers: [{ provide: APP_BASE_HREF, useValue: req.baseUrl }],
