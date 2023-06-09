@@ -93,7 +93,7 @@ write(
     routes: [
       // Specify that ISR should be used for the electronics home page
       {
-        src: "/electronics-spa/en/USD/$",
+        src: "/electronics-spa/en/USD$",
         dest: "/isr-electronics-home?__pathname=/electronics-spa/en/USD/",
       },
       // Specify that SSR should be used for all other pages
