@@ -1,6 +1,8 @@
 const { lstatSync, readdirSync, copyFileSync, writeFileSync, mkdirSync } = require("fs");
 const { dirname } = require("path");
 
+const out_dir = ".vercel/output";
+const project_dist = "dist/sap-store-6.x";
 
 function write(file, data) {
   try {
@@ -43,8 +45,37 @@ function createSSRFunction() {
   copyFiles(`${project_dist}/browser`, `${fn_dir}/${project_dist}/browser`);
 }
 
-const out_dir = ".vercel/output";
-const project_dist = "dist/sap-store-6.x";
+function createISRFunction(name, group) {
+  const fn_dir = `${out_dir}/functions/isr-${name}.func`;
+  write(
+    `${fn_dir}/.vc-config.json`,
+    JSON.stringify({
+      runtime: "nodejs18.x",
+      handler: "index.js",
+      launcherType: "Nodejs",
+    })
+  );
+
+  copyFiles(`${project_dist}/server`, fn_dir);
+
+  write(`${fn_dir}/index.js`, `module.exports = require("./main.js").app();`);
+
+  // static files also need to be copied to the function dir because the server runtime uses them
+  mkdirSync(`${fn_dir}/${project_dist}/browser`, { recursive: true });
+  copyFiles(`${project_dist}/browser`, `${fn_dir}/${project_dist}/browser`);
+
+  // Create prerender config json file
+  write(
+    `${out_dir}/functions/isr-${name}.prerender-config.json`,
+    JSON.stringify({
+      // for this example we hardcoding the revalidation interval to 60 seconds
+      expiration: 60,
+      group,
+      allowQuery: ["__pathname"],
+      passQuery: true,
+    })
+  );
+}
 
 // Create a static folder in the Vercel output folder for browser assets
 mkdirSync(`${out_dir}/static`, { recursive: true });
@@ -52,48 +83,24 @@ mkdirSync(`${out_dir}/static`, { recursive: true });
 copyFiles(`${project_dist}/browser`, `${out_dir}/static`);
 
 createSSRFunction();
-
-// // Create a serverless function responsible for ISR
-// const fn_dir = `${out_dir}/functions/isr.func`;
-// // Write the config file for the server runtime
-// write(
-//   `${fn_dir}/.vc-config.json`,
-//   JSON.stringify({
-//     runtime: "nodejs18.x",
-//     handler: "index.js",
-//     launcherType: "Nodejs",
-//   })
-// );
-
-// // Copy the main Spartacus bundle file to the serverless function directory
-// copyFiles(`${project_dist}/server`, fn_dir);
-// // Create an index.js file that will run the serverless application
-// write(`${fn_dir}/index.js`, `module.exports = require("./main.js").app();`);
-
-// // Since the serverless application relies on static files, create a function directory for them
-// mkdirSync(`${fn_dir}/${project_dist}/browser`, { recursive: true });
-// // Copy all the browser assets to the serverless function directory
-// copyFiles(`${project_dist}/browser`, `${fn_dir}/${project_dist}/browser`);
-
-// // Create a prerender configuration file that specifies the ISR configuration
-// write(
-//   `${out_dir}/functions/isr.prerender-config.json`,
-//   JSON.stringify({
-//     // Re-validation interval in seconds
-//     expiration: 60,
-//     // Group number of the asset. Assets with the same group will be re-validated together
-//     group: 1,
-//     // Array of query string parameter names that will be cached independently
-//     allowQuery: ["__pathname"],
-//   })
-// );
+createISRFunction("electronics-home", 1);
 
 // Write a config file for Vercel build output
 write(
   `${out_dir}/config.json`,
   JSON.stringify({
     version: 6,
-    // As an example, we are specifying that all paths should be handled by the ISR function
-    routes: [{ src: "/.*", dest: "/ssr" }],
+    routes: [
+      // Specify that ISR should be used for the electronics home page
+      {
+        src: "/electronics-spa/en/USD/$",
+        dest: "/isr-electronics-home?__pathname=/electronics-spa/en/USD/",
+      },
+      // Specify that SSR should be used for all other pages
+      { 
+        src: "/.*", 
+        dest: "/ssr" 
+      }
+    ],
   })
 );
