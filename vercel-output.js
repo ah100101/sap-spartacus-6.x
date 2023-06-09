@@ -83,7 +83,7 @@ mkdirSync(`${out_dir}/static`, { recursive: true });
 copyFiles(`${project_dist}/browser`, `${out_dir}/static`);
 
 createSSRFunction();
-createISRFunction("electronics-home", 1);
+createISRFunction("product-detail-example", 1);
 
 // Write a config file for Vercel build output
 write(
@@ -91,9 +91,9 @@ write(
   JSON.stringify({
     version: 6,
     routes: [
-      // Specify that ISR should be used for the electronics home page
+      // Specify that ISR should be used for a product detail page
       {
-        src: "/electronics-spa/en/USD/product/358639/DSC-N1/$",
+        src: "/electronics-spa/en/USD/product/358639/DSC-N1$",
         dest: "/isr?__pathname=/electronics-spa/en/USD/product/358639/DSC-N1"
       },
       // Specify that SSR should be used for all other pages
