@@ -94,8 +94,8 @@ write(
     routes: [
       // Specify that ISR should be used for a product detail page
       {
-        src: "/electronics-spa/en/USD/$",
-        dest: "/isr-electronics-home?__pathname=/electronics-spa/en/USD/",
+        src: "/electronics-spa/en/USD/product/358639/DSC-N1$",
+        dest: "/isr-electronics-home?__pathname=/electronics-spa/en/USD/product/358639/DSC-N1"
       },
       // Specify that SSR should be used for all other pages
       { 
