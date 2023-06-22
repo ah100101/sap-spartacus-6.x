@@ -84,7 +84,7 @@ mkdirSync(`${out_dir}/static`, { recursive: true });
 copyFiles(`${project_dist}/browser`, `${out_dir}/static`);
 
 createSSRFunction();
-createISRFunction("electronics-detail-page", 1);
+createISRFunction("electronics-detail-page", 1, "../static/product/553637/NV10/index.html");
 // Specify to the ISR function to use static/index.html during the initial user request
 // createISRFunction("electronics-home-page", 2, "../static/index.html");
 createISRFunction("electronics-home-page", 2);
@@ -102,8 +102,8 @@ write(
       },
       // Specify that ISR should be used for a product detail page
       {
-        src: "/electronics-spa/en/USD/product/358639/DSC-N1$",
-        dest: "/isr-electronics-detail-page?__pathname=/electronics-spa/en/USD/product/358639/DSC-N1"
+        src: "/electronics-spa/en/USD/product/553637/NV10$",
+        dest: "/isr-electronics-detail-page?__pathname=/electronics-spa/en/USD/product/553637/NV10"
       },
       // Specify that SSR should be used for all other pages
       { 

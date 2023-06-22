@@ -4,7 +4,7 @@
   "scripts": {
     "ng": "ng",
     "start": "ng serve:ssr",
-    "build": "npm run build:ssr && node ./vercel-output.js",
+    "build": "npm run build:ssr && npm run prerender && node ./vercel-output.js",
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
     "dev:ssr": "ng run sap-store-6.x:serve-ssr",

@@ -6,15 +6,13 @@ import { AppComponent } from './app.component';
 import { provideServer } from '@spartacus/setup/ssr';
 
 @NgModule({
-  imports: [
-    AppModule,
-    ServerModule,
-  ],
+  imports: [AppModule, ServerModule],
   bootstrap: [AppComponent],
   providers: [
     ...provideServer({
-       serverRequestOrigin: process.env['SERVER_REQUEST_ORIGIN'],
-     }),
+      serverRequestOrigin:
+        'https://api.c65i60w-esaustral1-s2-public.model-t.cc.commerce.ondemand.com',
+    }),
   ],
 })
 export class AppServerModule {}
