@@ -164,7 +164,7 @@
         "prerender": {
           "builder": "@nguniversal/builders:prerender",
           "options": {
-            "routes": ["/product/358639/DSC-N1", "/product/553637/NV10", "/"]
+            "routesFile": "prerender-routes.txt"
           },
           "configurations": {
             "production": {
