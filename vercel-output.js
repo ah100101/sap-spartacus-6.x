@@ -84,38 +84,32 @@ mkdirSync(`${out_dir}/static`, { recursive: true });
 copyFiles(`${project_dist}/browser`, `${out_dir}/static`);
 
 createSSRFunction();
-createISRFunction("electronics-detail-page", 1, "../static/product/553637/NV10/index.html");
-createISRFunction("electronics-detail-page", 3, "../static/product/358639/DSC-N1/index.html");
-// Specify to the ISR function to use static/index.html during the initial user request
-createISRFunction("electronics-home-page", 2, "../static/index.html");
+createISRFunction("electronics-home-page", 1, "../static/index.html");
+createISRFunction("electronics-detail-page-nv10", 2, "../static/product/553637/NV10/index.html");
+createISRFunction("electronics-detail-page-dsc-n1", 3, "../static/product/358639/DSC-N1/index.html");
 // createISRFunction("electronics-home-page", 2);
 
 // Write a config file for Vercel build output
 write(
   `${out_dir}/config.json`,
   JSON.stringify({
-    version: 8,
+    version: 9,
     routes: [
       // SSG
       // handled in angular.json
-      // SSR
-      // handled in catch all below
-      // ISR
-      // example with home page and product detail pages
-      // TODO, configure wildcard src and dest for multiple pdps
       // Specify that ISR with fallback should be used for the home page
       {
         src: "/electronics-spa/en/USD/$",
         dest: "/electronics-home-page?__pathname=/electronics-spa/en/USD/",
       },
-      // Specify that ISR should be used for a product detail page
-      // {
-      //   src: "/electronics-spa/en/USD/product/553637/NV10$",
-      //   dest: "/electronics-detail-page-nv10?__pathname=/electronics-spa/en/USD/product/553637/NV10"
-      // },
+      // Specify that ISR should be used for product detail pages
       {
-        src: "/electronics-spa/en/USD/product/(?<path>.+)$",
-        dest: "/electronics-detail-page?__pathname=/electronics-spa/en/USD/product/$path",
+        src: "/electronics-spa/en/USD/product/553637/NV10$",
+        dest: "/electronics-detail-page-nv10?__pathname=/electronics-spa/en/USD/product/553637/NV10"
+      },
+      {
+        src: "/electronics-spa/en/USD/product/553637/NV10$",
+        dest: "/electronics-detail-page-dsc-n1?__pathname=/electronics-spa/en/USD/product/358639/DSC-N1"
       },
       // Specify that SSR should be used for all other pages
       { 
