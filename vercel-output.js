@@ -115,7 +115,7 @@ isrPages.forEach((page, i) => {
 write(
   `${out_dir}/config.json`,
   JSON.stringify({
-    version: 9,
+    version: 10,
     routes: [
       // Specify that SSR should be used for all other pages
       { 
@@ -126,7 +126,7 @@ write(
       ...isrPages.map(page => {
         return {
             src: `${page.route}$`,
-            dest: `isr-func-${page.id}__pathname=${page.route}`
+            dest: `/isr-func-${page.id}?__pathname=${page.route}`
         }
       })
     ],
