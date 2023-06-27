@@ -13,7 +13,7 @@ const isrPages = [
   {
     id: "nv10",
     route: "/electronics-spa/en/USD/product/553637/NV10",
-    fallbackHTML: "../static/index.html",
+    fallbackHTML: "../static/product/553637/NV10/index.html",
   },
   {
     id: "dsc-n1",
@@ -106,6 +106,10 @@ createSSRFunction();
 isrPages.forEach((page, i) => {
   createISRFunction(`isr-func-${page.id}`, ++i, page.fallbackHTML);
 });
+// createISRFunction("electronics-home-page", 1, "../static/index.html");
+// createISRFunction("electronics-detail-page-nv10", 2, "../static/product/553637/NV10/index.html");
+// createISRFunction("electronics-detail-page-dsc-n1", 3, "../static/product/358639/DSC-N1/index.html");
+// createISRFunction("electronics-home-page", 2);
 
 // Write a config file for Vercel build output
 write(
@@ -118,6 +122,7 @@ write(
         src: "/.*", 
         dest: "/ssr" 
       },
+      // Specify the ISR routes
       ...isrPages.map(page => {
         return {
             src: `${page.route}$`,
