@@ -4,6 +4,24 @@ const { dirname } = require("path");
 const out_dir = ".vercel/output";
 const project_dist = "dist/sap-store-6.x";
 
+const isrPages = [
+  {
+    id: "home",
+    route: "/electronics-spa/en/USD/",
+    fallbackHTML: "../static/index.html",
+  },
+  {
+    id: "nv10",
+    route: "/electronics-spa/en/USD/product/553637/NV10",
+    fallbackHTML: "../static/index.html",
+  },
+  {
+    id: "dsc-n1",
+    route: "/electronics-spa/en/USD/product/358639/DSC-N1",
+    fallbackHTML: "../static/product/358639/DSC-N1/index.html",
+  }
+]
+
 function write(file, data) {
   try {
     mkdirSync(dirname(file), { recursive: true });
@@ -84,10 +102,10 @@ mkdirSync(`${out_dir}/static`, { recursive: true });
 copyFiles(`${project_dist}/browser`, `${out_dir}/static`);
 
 createSSRFunction();
-createISRFunction("electronics-home-page", 1, "../static/index.html");
-createISRFunction("electronics-detail-page-nv10", 2, "../static/product/553637/NV10/index.html");
-createISRFunction("electronics-detail-page-dsc-n1", 3, "../static/product/358639/DSC-N1/index.html");
-// createISRFunction("electronics-home-page", 2);
+
+isrPages.forEach((page, i) => {
+  createISRFunction(`isr-func-${page.id}`, i, page.fallbackHTML);
+});
 
 // Write a config file for Vercel build output
 write(
@@ -95,27 +113,17 @@ write(
   JSON.stringify({
     version: 9,
     routes: [
-      // SSG
-      // handled in angular.json
-      // Specify that ISR with fallback should be used for the home page
-      {
-        src: "/electronics-spa/en/USD/$",
-        dest: "/electronics-home-page?__pathname=/electronics-spa/en/USD/",
-      },
-      // Specify that ISR should be used for product detail pages
-      {
-        src: "/electronics-spa/en/USD/product/553637/NV10$",
-        dest: "/electronics-detail-page-nv10?__pathname=/electronics-spa/en/USD/product/553637/NV10"
-      },
-      {
-        src: "/electronics-spa/en/USD/product/358639/DSC-N1$",
-        dest: "/electronics-detail-page-dsc-n1?__pathname=/electronics-spa/en/USD/product/358639/DSC-N1"
-      },
       // Specify that SSR should be used for all other pages
       { 
         src: "/.*", 
         dest: "/ssr" 
-      }
+      },
+      ...isrPages.map(page => {
+        return {
+            src: `${page.route}$`,
+            dest: `isr-func-${page.id}__pathname=${page.route}`
+        }
+      })
     ],
   })
 );
