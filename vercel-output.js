@@ -108,7 +108,7 @@ write(
         dest: "/electronics-detail-page-nv10?__pathname=/electronics-spa/en/USD/product/553637/NV10"
       },
       {
-        src: "/electronics-spa/en/USD/product/553637/NV10$",
+        src: "/electronics-spa/en/USD/product/358639/DSC-N1$",
         dest: "/electronics-detail-page-dsc-n1?__pathname=/electronics-spa/en/USD/product/358639/DSC-N1"
       },
       // Specify that SSR should be used for all other pages
