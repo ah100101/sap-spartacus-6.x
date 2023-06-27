@@ -104,7 +104,7 @@ copyFiles(`${project_dist}/browser`, `${out_dir}/static`);
 createSSRFunction();
 
 isrPages.forEach((page, i) => {
-  createISRFunction(`isr-func-${page.id}`, i, page.fallbackHTML);
+  createISRFunction(`isr-func-${page.id}`, ++i, page.fallbackHTML);
 });
 
 // Write a config file for Vercel build output
