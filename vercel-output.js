@@ -117,18 +117,18 @@ write(
   JSON.stringify({
     version: 10,
     routes: [
+      // Specify the ISR routes
+      ...isrPages.map(page => {
+        return {
+          src: `${page.route}$`,
+          dest: `/isr-func-${page.id}?__pathname=${page.route}`
+        }
+      }),
       // Specify that SSR should be used for all other pages
       { 
         src: "/.*", 
         dest: "/ssr" 
       },
-      // Specify the ISR routes
-      ...isrPages.map(page => {
-        return {
-            src: `${page.route}$`,
-            dest: `/isr-func-${page.id}?__pathname=${page.route}`
-        }
-      })
     ],
   })
 );
