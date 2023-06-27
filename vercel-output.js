@@ -84,7 +84,8 @@ mkdirSync(`${out_dir}/static`, { recursive: true });
 copyFiles(`${project_dist}/browser`, `${out_dir}/static`);
 
 createSSRFunction();
-createISRFunction("electronics-detail-page-nv10", 1, "../static/product/553637/NV10/index.html");
+createISRFunction("electronics-detail-page", 1, "../static/product/553637/NV10/index.html");
+createISRFunction("electronics-detail-page", 3, "../static/product/358639/DSC-N1/index.html");
 // Specify to the ISR function to use static/index.html during the initial user request
 createISRFunction("electronics-home-page", 2, "../static/index.html");
 // createISRFunction("electronics-home-page", 2);
@@ -108,14 +109,14 @@ write(
         dest: "/electronics-home-page?__pathname=/electronics-spa/en/USD/",
       },
       // Specify that ISR should be used for a product detail page
-      {
-        src: "/electronics-spa/en/USD/product/553637/NV10$",
-        dest: "/electronics-detail-page-nv10?__pathname=/electronics-spa/en/USD/product/553637/NV10"
-      },
       // {
-      //   src: "/electronics-spa/en/USD/product/(?<path>.+)$",
-      //   dest: "/electronics-detail-page?__pathname=/electronics-spa/en/USD/product/$path",
+      //   src: "/electronics-spa/en/USD/product/553637/NV10$",
+      //   dest: "/electronics-detail-page-nv10?__pathname=/electronics-spa/en/USD/product/553637/NV10"
       // },
+      {
+        src: "/electronics-spa/en/USD/product/(?<path>.+)$",
+        dest: "/electronics-detail-page?__pathname=/electronics-spa/en/USD/product/$path",
+      },
       // Specify that SSR should be used for all other pages
       { 
         src: "/.*", 
