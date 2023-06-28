@@ -124,6 +124,10 @@ write(
           dest: `/isr-func-${page.id}?__pathname=${page.route}`
         }
       }),
+      {
+        src: "/electronics-spa/en/USD/product/1934398/HDR-XR105E$",
+        dest: "/product/1934398/HDR-XR105E/index.html",
+      },
       // Specify that SSR should be used for all other pages
       { 
         src: "/.*", 
