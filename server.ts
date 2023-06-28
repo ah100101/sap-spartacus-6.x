@@ -48,6 +48,17 @@ export function app() {
 
   // All regular routes use the Universal engine
   server.get('*', (req, res) => {
+    if (req.url) {
+      const [path, search] = req.url.split('?');
+
+      const params = new URLSearchParams(search);
+      const pathname = params.get('__pathname');
+
+      if (pathname) {
+        params.delete('__pathname');
+        req.url = pathname;
+      }
+    }
     res.render(indexHtml, {
       req,
       providers: [{ provide: APP_BASE_HREF, useValue: req.baseUrl }],
