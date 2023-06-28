@@ -1,8 +1,15 @@
 const { lstatSync, readdirSync, copyFileSync, writeFileSync, mkdirSync } = require("fs");
 const { dirname } = require("path");
 
-const out_dir = ".vercel/output";
-const project_dist = "dist/sap-store-6.x";
+const OUT_DIR = ".vercel/output";
+const PROJECT_DIST = "dist/sap-store-6.x";
+
+const ssgPages = [
+  {
+    src: "/electronics-spa/en/USD/product/1934398/HDR-XR105E$",
+    dest: "/product/1934398/HDR-XR105E/index.html",
+  }
+]
 
 const isrPages = [
   {
@@ -44,7 +51,7 @@ function copyFiles(source, target) {
 }
 
 function createSSRFunction() {
-  const fn_dir = `${out_dir}/functions/ssr.func`;
+  const fn_dir = `${OUT_DIR}/functions/ssr.func`;
   write(
     `${fn_dir}/.vc-config.json`,
     JSON.stringify({
@@ -54,19 +61,19 @@ function createSSRFunction() {
     })
   );
 
-  copyFiles(`${project_dist}/server`, fn_dir);
+  copyFiles(`${PROJECT_DIST}/server`, fn_dir);
 
   write(`${fn_dir}/index.js`, `module.exports = require("./main.js").app();`);
 
   // static files also need to be copied to the function dir because the server runtime uses them
-  mkdirSync(`${fn_dir}/${project_dist}/browser`, { recursive: true });
-  copyFiles(`${project_dist}/browser`, `${fn_dir}/${project_dist}/browser`);
+  mkdirSync(`${fn_dir}/${PROJECT_DIST}/browser`, { recursive: true });
+  copyFiles(`${PROJECT_DIST}/browser`, `${fn_dir}/${PROJECT_DIST}/browser`);
 }
 
 function createISRFunction(name, group, fallback) {
-  const fn_dir = `${out_dir}/functions/${name}.func`;
+  const funcDir = `${OUT_DIR}/functions/${name}.func`;
   write(
-    `${fn_dir}/.vc-config.json`,
+    `${funcDir}/.vc-config.json`,
     JSON.stringify({
       runtime: "nodejs18.x",
       handler: "index.js",
@@ -74,17 +81,17 @@ function createISRFunction(name, group, fallback) {
     })
   );
 
-  copyFiles(`${project_dist}/server`, fn_dir);
+  copyFiles(`${PROJECT_DIST}/server`, funcDir);
 
-  write(`${fn_dir}/index.js`, `module.exports = require("./main.js").app();`);
+  write(`${funcDir}/index.js`, `module.exports = require("./main.js").app();`);
 
   // static files also need to be copied to the function dir because the server runtime uses them
-  mkdirSync(`${fn_dir}/${project_dist}/browser`, { recursive: true });
-  copyFiles(`${project_dist}/browser`, `${fn_dir}/${project_dist}/browser`);
+  mkdirSync(`${funcDir}/${PROJECT_DIST}/browser`, { recursive: true });
+  copyFiles(`${PROJECT_DIST}/browser`, `${funcDir}/${PROJECT_DIST}/browser`);
 
   // Create prerender config json file
   write(
-    `${out_dir}/functions/${name}.prerender-config.json`,
+    `${OUT_DIR}/functions/${name}.prerender-config.json`,
     JSON.stringify({
       // for this example we hardcoding the revalidation interval to 60 seconds
       expiration: 60,
@@ -97,9 +104,9 @@ function createISRFunction(name, group, fallback) {
 }
 
 // Create a static folder in the Vercel output folder for browser assets
-mkdirSync(`${out_dir}/static`, { recursive: true });
+mkdirSync(`${OUT_DIR}/static`, { recursive: true });
 // Copy all browser assets to the static Vercel folder
-copyFiles(`${project_dist}/browser`, `${out_dir}/static`);
+copyFiles(`${PROJECT_DIST}/browser`, `${OUT_DIR}/static`);
 
 createSSRFunction();
 
@@ -113,10 +120,12 @@ isrPages.forEach((page, i) => {
 
 // Write a config file for Vercel build output
 write(
-  `${out_dir}/config.json`,
+  `${OUT_DIR}/config.json`,
   JSON.stringify({
     version: 10,
     routes: [
+      // Specify the SSG routes
+      ...ssgPages,
       // Specify the ISR routes
       ...isrPages.map(page => {
         return {
@@ -124,10 +133,10 @@ write(
           dest: `/isr-func-${page.id}?__pathname=${page.route}`
         }
       }),
-      {
-        src: "/electronics-spa/en/USD/product/1934398/HDR-XR105E$",
-        dest: "/product/1934398/HDR-XR105E/index.html",
-      },
+      // {
+      //   src: "/electronics-spa/en/USD/product/1934398/HDR-XR105E$",
+      //   dest: "/product/1934398/HDR-XR105E/index.html",
+      // },
       // Specify that SSR should be used for all other pages
       { 
         src: "/.*", 
