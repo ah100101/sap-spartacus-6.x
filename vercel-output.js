@@ -6,8 +6,28 @@ const PROJECT_DIST = "dist/sap-store-6.x";
 
 const ssgPages = [
   {
-    src: "/electronics-spa/en/USD/product/1934398/HDR-XR105E$",
-    dest: "/product/1934398/HDR-XR105E/index.html",
+    route: "/electronics-spa/en/USD/product/1934398/HDR-XR105E$",
+    staticHTML: "/product/1934398/HDR-XR105E/index.html",
+  },  
+  {
+    route: "/electronics-spa/en/USD/product/1986316/LEGRIA%20HF%20S100",
+    staticHTML: "/product/1986316/LEGRIA%20HF%20S100/index.html",
+  },
+  {
+    route: "/electronics-spa/en/USD/product/1432722/Gigashot%20K80H",
+    staticHTML: "/product/1432722/Gigashot%20K80H/index.html",
+  },
+  {
+    route: "/electronics-spa/en/USD/product/1776948/Camileo%20S10%20EU",
+    staticHTML: "/product/1776948/Camileo%20S10%20EU/index.html",
+  },
+  {
+    route: "/electronics-spa/en/USD/product/1934406/HDR-CX105E%20%20Red",
+    staticHTML: "/product/1934406/HDR-CX105E%20%20Red/index.html",
+  },
+  {
+    route: "/electronics-spa/en/USD/product/1776947/Camileo%20H20%20EU",
+    staticHTML: "/product/1776947/Camileo%20H20%20EU/index.html",
   }
 ]
 
@@ -93,7 +113,7 @@ function createISRFunction(name, group, fallback) {
   write(
     `${OUT_DIR}/functions/${name}.prerender-config.json`,
     JSON.stringify({
-      // for this example we hardcoding the revalidation interval to 60 seconds
+      // For this example, we are hardcoding the revalidation interval to 60 seconds
       expiration: 60,
       group,
       allowQuery: ["__pathname"],
@@ -113,10 +133,6 @@ createSSRFunction();
 isrPages.forEach((page, i) => {
   createISRFunction(`isr-func-${page.id}`, ++i, page.fallbackHTML);
 });
-// createISRFunction("electronics-home-page", 1, "../static/index.html");
-// createISRFunction("electronics-detail-page-nv10", 2, "../static/product/553637/NV10/index.html");
-// createISRFunction("electronics-detail-page-dsc-n1", 3, "../static/product/358639/DSC-N1/index.html");
-// createISRFunction("electronics-home-page", 2);
 
 // Write a config file for Vercel build output
 write(
@@ -124,19 +140,18 @@ write(
   JSON.stringify({
     version: 10,
     routes: [
-      // Specify the SSG routes
-      ...ssgPages,
-      // Specify the ISR routes
+      ...ssgPages.map(page => {
+        return {
+          src: `${page.route}$`,
+          dest: page.staticHTML,
+        }
+      }),
       ...isrPages.map(page => {
         return {
           src: `${page.route}$`,
           dest: `/isr-func-${page.id}?__pathname=${page.route}`
         }
       }),
-      // {
-      //   src: "/electronics-spa/en/USD/product/1934398/HDR-XR105E$",
-      //   dest: "/product/1934398/HDR-XR105E/index.html",
-      // },
       // Specify that SSR should be used for all other pages
       { 
         src: "/.*", 
