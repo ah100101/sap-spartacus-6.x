@@ -150,7 +150,7 @@ ISR_PAGES.forEach((page, i) => {
 write(
   `${OUT_DIR}/config.json`,
   JSON.stringify({
-    version: 10,
+    version: 11,
     routes: [
       ...SSG_PAGES.map(page => {
         return {
