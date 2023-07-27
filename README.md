@@ -2,6 +2,10 @@
 
 This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 15.2.8.
 
+## Deploy to Vercel
+
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fah100101%2Fsap-spartacus-6.x&env=NPM_RC&envDescription=This%20SAP%20project%20requires%20access%20to%20a%20private%20registry&envLink=https%3A%2F%2Fvercel.com%2Fguides%2Fusing-private-dependencies-with-vercel&project-name=sap-vercel-demo-project&repository-name=sap-vercel-demo-repo)
+
 ## Development server
 
 Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The application will automatically reload if you change any of the source files.
