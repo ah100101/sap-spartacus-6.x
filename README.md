@@ -4,7 +4,7 @@ This project was generated with [Angular CLI](https://github.com/angular/angular
 
 ## Deploy to Vercel
 
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fah100101%2Fsap-spartacus-6.x&env=NPM_RC&envDescription=This%20SAP%20project%20requires%20access%20to%20a%20private%20registry&envLink=https%3A%2F%2Fvercel.com%2Fguides%2Fusing-private-dependencies-with-vercel&project-name=sap-vercel-demo-project&repository-name=sap-vercel-demo-repo)
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fah100101%2Fsap-spartacus-6.x&project-name=sap-vercel-demo-project&repository-name=sap-vercel-demo-repo)
 
 ## Development server
 
