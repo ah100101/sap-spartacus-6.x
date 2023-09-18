@@ -123,7 +123,7 @@ function createISRFunction(name, group, fallback) {
     `${OUT_DIR}/functions/${name}.prerender-config.json`,
     JSON.stringify({
       // For this example, we are hardcoding the revalidation interval to 60 seconds
-      expiration: 60,
+      expiration: 10,
       group,
       allowQuery: ["__pathname"],
       passQuery: true,
